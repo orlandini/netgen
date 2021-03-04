@@ -383,7 +383,7 @@ DLL_HEADER void ExportNetgenMeshing(py::module &m)
     ;
 
   py::class_<Element>(m, "Element3D")
-    .def(py::init([](std::vector<PointIndex> vertices, int index)
+    .def(py::init([](int index, std::vector<PointIndex> vertices)
                   {
                     int np = vertices.size();
                     ELEMENT_TYPE et;
@@ -408,7 +408,7 @@ DLL_HEADER void ExportNetgenMeshing(py::module &m)
                     newel->SetIndex(index);
                     return newel;
                   }),
-          py::arg("vertices"),py::arg("index")=1,
+          py::arg("index"),py::arg("vertices"),
          "create volume element"
          )
     .def("__repr__", &ToString<Element>)
@@ -433,7 +433,7 @@ DLL_HEADER void ExportNetgenMeshing(py::module &m)
     ;
 
   py::class_<Element2d>(m, "Element2D")
-    .def(py::init ([](std::vector<PointIndex> vertices, int index)
+    .def(py::init ([](int index, std::vector<PointIndex> vertices)
                    {
                      Element2d * newel = nullptr;
                      if (vertices.size() == 3)
@@ -468,7 +468,7 @@ DLL_HEADER void ExportNetgenMeshing(py::module &m)
                        throw NgException("Inconsistent number of vertices in Element2D");
                      return newel;
                    }),
-                   py::arg("vertices"),py::arg("index")=1,
+                   py::arg("index"),py::arg("vertices"),
          "create surface element"
          )
     .def_property("index", &Element2d::GetIndex, &Element2d::SetIndex)
