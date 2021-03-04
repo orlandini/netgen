@@ -95,6 +95,14 @@ static Transformation<3> global_trafo(Vec<3> (0,0,0));
 
 DLL_HEADER void ExportNetgenMeshing(py::module &m) 
 {
+
+  /**declaration of python types for generating proper stubs
+     if these types are not declared and are used as function
+     parameters then the stubs are not valid python*/
+  auto pyVec2d = py::class_<Vec<2>> (m, "Vec2d");
+  auto pyVec3d = py::class_<Vec<3>> (m, "Vec3d");
+  typedef MeshingParameters MP;
+  auto pyMeshingParameters = py::class_<MP> (m, "MeshingParameters");
 #ifdef NG_MPI4PY
   import_mpi4py();
 #endif // NG_MPI4PY
@@ -209,7 +217,7 @@ DLL_HEADER void ExportNetgenMeshing(py::module &m)
                                                        np_array.at(2))));
                });
 
-  py::class_<Vec<2>> (m, "Vec2d")
+  pyVec2d
     .def(py::init<double,double>())
     .def(py::init( [] (std::pair<double,double> xy)
             {
@@ -229,7 +237,7 @@ DLL_HEADER void ExportNetgenMeshing(py::module &m)
 
   py::implicitly_convertible<py::tuple, Vec<2>>();
 
-  py::class_<Vec<3>> (m, "Vec3d")
+  pyVec3d
     .def(py::init<double,double,double>())
     .def(py::init([](py::tuple v)
     {
@@ -1196,8 +1204,7 @@ project_boundaries : Optional[str] = None
     .value("MESHVOLUME", MESHCONST_OPTVOLUME)
     ;
          
-  typedef MeshingParameters MP;
-  auto mp = py::class_<MP> (m, "MeshingParameters")
+  pyMeshingParameters
     .def(py::init<>())
             .def(py::init([](MeshingParameters* other, py::kwargs kwargs)
                   {
