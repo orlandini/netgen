@@ -383,11 +383,8 @@ DLL_HEADER void ExportNetgenMeshing(py::module &m)
     ;
 
   py::class_<Element>(m, "Element3D")
-    .def(py::init([](int index, py::list p_v)
+    .def(py::init([](std::vector<PointIndex> vertices, int index)
                   {
-                    std::vector<PointIndex> vertices;
-                    for(auto i = 0; i < p_v.size(); i++)
-                      { vertices.push_back(py::extract<PointIndex>(p_v[i])());}
                     int np = vertices.size();
                     ELEMENT_TYPE et;
                     switch (np)
@@ -411,7 +408,7 @@ DLL_HEADER void ExportNetgenMeshing(py::module &m)
                     newel->SetIndex(index);
                     return newel;
                   }),
-          py::arg("index")=1,py::arg("vertices")=py::list(),
+          py::arg("vertices"),py::arg("index")=1,
          "create volume element"
          )
     .def("__repr__", &ToString<Element>)
@@ -436,11 +433,8 @@ DLL_HEADER void ExportNetgenMeshing(py::module &m)
     ;
 
   py::class_<Element2d>(m, "Element2D")
-    .def(py::init ([](int index, py::list p_v)
+    .def(py::init ([](std::vector<PointIndex> vertices, int index)
                    {
-                     std::vector<PointIndex> vertices;
-                     for(auto i = 0; i < p_v.size(); i++)
-                       { vertices.push_back(py::extract<PointIndex>(p_v[i])());}
                      Element2d * newel = nullptr;
                      if (vertices.size() == 3)
                        {
@@ -474,7 +468,7 @@ DLL_HEADER void ExportNetgenMeshing(py::module &m)
                        throw NgException("Inconsistent number of vertices in Element2D");
                      return newel;
                    }),
-                   py::arg("index")=1,py::arg("vertices")=py::list(),
+                   py::arg("vertices"),py::arg("index")=1,
          "create surface element"
          )
     .def_property("index", &Element2d::GetIndex, &Element2d::SetIndex)
